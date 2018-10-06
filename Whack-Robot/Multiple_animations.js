@@ -22,6 +22,8 @@ var animation = "idle";
 
 var mouse = new THREE.Vector2(), CLICKED, INTERSECTED;
 
+var canvas = null;
+
 function changeAnimation(animation_text)
 {
     animation = animation_text;
@@ -147,6 +149,8 @@ var mapUrl = "../images/checker_large.gif";
 var SHADOW_MAP_WIDTH = 2048, SHADOW_MAP_HEIGHT = 2048;
 
 function createScene(canvas) {
+
+    this.canvas = canvas;
     
     // Create the Three.js renderer and attach it to our canvas
     renderer = new THREE.WebGLRenderer( { canvas: canvas, antialias: true } );
@@ -243,6 +247,9 @@ function onDocumentMouseDown(event)
     event.preventDefault();
     mouse.x = ( event.clientX / currentSize.width ) * 2 - 1;
     mouse.y = - ( event.clientY / currentSize.height ) * 2 + 1;
+
+    if (event.clientX > canvas.width || event.clientY > canvas.height)
+        return false;
 
     console.log("mouse down");
 
