@@ -264,7 +264,8 @@ function onDocumentMouseDown(event)
     {
         console.log("intersects something");
         CLICKED = intersects[ 0 ].object;
-        CLICKED.material.emissive.setHex( 0x00ff00 );
+        //CLICKED.material.emissive.setHex( 0x00ff00 );
+        changeAnimation("dead");
 
         /*if(!animator.running)
         {
