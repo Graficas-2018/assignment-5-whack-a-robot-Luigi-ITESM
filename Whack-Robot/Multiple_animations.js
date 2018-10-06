@@ -7,8 +7,9 @@ robot_attack = null,
 flamingo = null,
 stork = null,
 group = null,
-orbitControls = null
-raycaster = null;
+orbitControls = null,
+raycaster = null,
+currentSize = null;
 
 var robot_mixer = {};
 var deadAnimator;
@@ -237,17 +238,18 @@ function onWindowResize()
 
 function onDocumentMouseDown(event)
 {
+    currentSize = renderer.getSize();
     event.preventDefault();
     event.preventDefault();
-    mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-    mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+    mouse.x = ( event.clientX / currentSize.width ) * 2 - 1;
+    mouse.y = - ( event.clientY / currentSize.height ) * 2 + 1;
 
     console.log("mouse down");
 
     // find intersections
     raycaster.setFromCamera( mouse, camera );
 
-    var intersects = raycaster.intersectObjects( scene.children );
+    var intersects = raycaster.intersectObjects( scene.children, true );
 
     console.log(intersects);
 
@@ -277,9 +279,10 @@ function onDocumentMouseDown(event)
 
 function onDocumentMouseMove( event ) 
 {
+    currentSize = renderer.getSize();
     event.preventDefault();
-    mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-    mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+    mouse.x = ( event.clientX / currentSize.width ) * 2 - 1;
+    mouse.y = - ( event.clientY / currentSize.height ) * 2 + 1;
 
     // find intersections
     raycaster.setFromCamera( mouse, camera );
