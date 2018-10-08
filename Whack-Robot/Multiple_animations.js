@@ -12,11 +12,13 @@ raycaster = null,
 currentSize = null;
 
 var robot_mixer = {};
-var deadAnimator;
+var deadAnimator, moveAnimator;
 var morphs = [];
 
+var robots =[];
+
 var duration = 20000; // ms
-var newNow = null;
+var deadMoment = null, moveMoment = null, move = true;
 var currentTime = Date.now();
 
 var animation = "idle";
@@ -68,8 +70,10 @@ function loadFBX()
     loader.load( '../models/Robot/robot_idle.fbx', function ( object ) 
     {
         robot_mixer["idle"] = new THREE.AnimationMixer( scene );
-        object.scale.set(0.02, 0.02, 0.02);
+        object.scale.set(0.01, 0.01, 0.01);
         object.position.y -= 4;
+        object.position.x -= 15;
+        //object.rotation.y -= Math.PI / 4;
         object.traverse( function ( child ) {
             if ( child.isMesh ) {
                 child.castShadow = true;
@@ -80,6 +84,7 @@ function loadFBX()
         scene.add( robot_idle );
         
         createDeadAnimation();
+        //createMoveAnimation();
 
         robot_mixer["idle"].clipAction( object.animations[ 0 ], robot_idle ).play();
 
@@ -103,6 +108,8 @@ function loadFBX()
     } );
 }
 
+
+
 function animate() {
 
     var now = Date.now();
@@ -111,17 +118,37 @@ function animate() {
 
     if(robot_idle && robot_mixer[animation])
     {
+        // Move the robot
+        if (move) {
+            //let z = 
+            //console.log(z);
+            robot_idle.position.x = Math.floor(Math.random() * 25) - 12.5;
+            robot_idle.position.z = 5 - Math.floor(Math.random() * 20);
+            scene.add(robot_idle);
+            move = false;
+            moveMoment = now;
+            
+        } else {
+            if ((now - moveMoment) >= 2000) {
+                scene.remove(robot_idle);
+                move = true;
+            }
+        }
+
         robot_mixer[animation].update(deltat * 0.001);
-        newNow = now;
+        deadMoment = now;
     }
 
     if(animation =="dead")
     {
         KF.update();
         robot_mixer["walk"].update(deltat * 0.001);
-        //console.log(now - newNow);
-        if ((now - newNow) >= duration / 10)
+        //console.log(now - deadMoment);
+        if ((now - deadMoment) >= duration / 10) {
             scene.remove(robot_idle);
+            animation = "idle";
+            robot_idle.rotation.x = 0;
+        }
     }
 }
 
@@ -174,7 +201,7 @@ function createScene(canvas) {
 
     // Add  a camera so we can view the scene
     camera = new THREE.PerspectiveCamera( 45, canvas.width / canvas.height, 1, 4000 );
-    camera.position.set(-15, 6, 30);
+    camera.position.set(0, 6, 30);
     scene.add(camera);
 
     orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
