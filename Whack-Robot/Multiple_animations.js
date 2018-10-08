@@ -16,6 +16,7 @@ var deadAnimator;
 var morphs = [];
 
 var duration = 20000; // ms
+var newNow = null;
 var currentTime = Date.now();
 
 var animation = "idle";
@@ -23,6 +24,7 @@ var animation = "idle";
 var mouse = new THREE.Vector2(), CLICKED, INTERSECTED;
 
 var canvas = null;
+
 
 function changeAnimation(animation_text)
 {
@@ -110,12 +112,16 @@ function animate() {
     if(robot_idle && robot_mixer[animation])
     {
         robot_mixer[animation].update(deltat * 0.001);
+        newNow = now;
     }
 
     if(animation =="dead")
     {
         KF.update();
         robot_mixer["walk"].update(deltat * 0.001);
+        //console.log(now - newNow);
+        if ((now - newNow) >= duration / 10)
+            scene.remove(robot_idle);
     }
 }
 
