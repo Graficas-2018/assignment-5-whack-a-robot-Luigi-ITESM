@@ -18,8 +18,11 @@ var morphs = [];
 var robots =[];
 
 var duration = 20000; // ms
-var deadMoment = null, moveMoment = null, move = true;
+var deadMoment = null, moveMoment = null, move = true, stopAll = true;
 var currentTime = Date.now();
+
+var initTimer = true, time = null, timer = 30;
+var highScore = 0, score = 0;
 
 var animation = "idle";
 
@@ -152,6 +155,44 @@ function animate() {
     }
 }
 
+function myTimer() {
+    if (initTimer) {
+        time = Date.now();
+        initTimer = false;
+    } else {
+        if ((Date.now() - time) >= 1000 && timer > 0) { 
+            time += 1000;
+            timer--;
+            document.getElementById("timer").innerHTML = timer;
+        } else {
+            if (timer <= 0) {
+                stopAll = true;
+                document.getElementById("instruction").innerHTML = "Instruction: Click restart button to begin again";
+                if (score > highScore) {
+                    highScore = score;
+                    document.getElementById("highscore").innerHTML = score;
+                }
+            }
+        }
+    }
+
+}
+
+function onClickButtonDetection(id) {
+    if (id == 'start') {
+        stopAll = false;
+        //console.log("Entra");
+        document.getElementById("start").disabled = true;
+        document.getElementById("restart").disabled = false;
+    } else {
+        stopAll = false;
+        score = 0;
+        document.getElementById("score").innerHTML = score;
+        initTimer = true;
+        timer = 30;
+    }
+}
+
 function run() {
     requestAnimationFrame(function() { run(); });
     
@@ -159,7 +200,14 @@ function run() {
         renderer.render( scene, camera );
 
         // Spin the cube for next frame
-        animate();
+        if(!stopAll) {
+            animate();
+
+            myTimer();
+        }
+
+        // Click detection
+        //onClickButtonDetection();    
 
         // Update the camera controller
         orbitControls.update();
@@ -275,46 +323,53 @@ function onWindowResize()
 
 function onDocumentMouseDown(event)
 {
-    currentSize = renderer.getSize();
-    event.preventDefault();
-    event.preventDefault();
-    mouse.x = ( event.clientX / currentSize.width ) * 2 - 1;
-    mouse.y = - ( event.clientY / currentSize.height ) * 2 + 1;
+    if (!stopAll) {
+        currentSize = renderer.getSize();
+        event.preventDefault();
+        event.preventDefault();
+        mouse.x = ( event.clientX / currentSize.width ) * 2 - 1;
+        mouse.y = - ( event.clientY / currentSize.height ) * 2 + 1;
 
-    if (event.clientX > canvas.width || event.clientY > canvas.height)
-        return false;
+        if (event.clientX > canvas.width || event.clientY > canvas.height)
+            return false;
 
-    console.log("mouse down");
+        console.log("mouse down");
 
-    // find intersections
-    raycaster.setFromCamera( mouse, camera );
+        // find intersections
+        raycaster.setFromCamera( mouse, camera );
 
-    var intersects = raycaster.intersectObjects( scene.children, true );
+        var intersects = raycaster.intersectObjects( scene.children, true );
 
-    console.log(intersects);
+        console.log(intersects);
 
-    if ( intersects.length > 0 ) 
-    {
-        console.log("intersects something");
-        CLICKED = intersects[ 0 ].object;
-        //CLICKED.material.emissive.setHex( 0x00ff00 );
-        changeAnimation("dead");
-
-        /*if(!animator.running)
+        if ( intersects.length > 0 ) 
         {
-            for(var i = 0; i<= animator.interps.length -1; i++)
-            {
-                animator.interps[i].target = CLICKED.rotation;
+            console.log("intersects something");
+            CLICKED = intersects[ 0 ].object;
+            //CLICKED.material.emissive.setHex( 0x00ff00 );
+            //console.log(CLICKED.name);
+            if (CLICKED.name == "Robot1") {
+                changeAnimation("dead");
+                score++;
+                document.getElementById("score").innerHTML = score;
             }
-            // playAnimations();
-        }*/
-    } 
-    else 
-    {
-        if ( CLICKED ) 
-            CLICKED.material.emissive.setHex( CLICKED.currentHex );
 
-        CLICKED = null;
+            /*if(!animator.running)
+            {
+                for(var i = 0; i<= animator.interps.length -1; i++)
+                {
+                    animator.interps[i].target = CLICKED.rotation;
+                }
+                // playAnimations();
+            }*/
+        } 
+        else 
+        {
+            if ( CLICKED ) 
+                CLICKED.material.emissive.setHex( CLICKED.currentHex );
+
+            CLICKED = null;
+        }
     }
 }
 

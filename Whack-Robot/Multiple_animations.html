@@ -66,10 +66,37 @@ function initControls()
 
 <div id="container">
     <canvas id="webglcanvas" width=800 height=600></canvas>
-	<div id="title">Three.js Morph Targets</div>
+	<div id="title">
+		<table width="750">
+			<tbody>
+				<tr>
+					<td>
+						<h3>High Score: <label id="highscore">0</label></h3>
+					</td>
+					<td align="right">
+						<p id="instruction">Instruction: Click the start button to begin the game</p>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<h3>Score: <label id="score">0</label></h3>
+					</td>
+					<td align="right">
+						<button id="start" onclick="onClickButtonDetection('start')">Start</button>
+						<button id="restart" onclick="onClickButtonDetection('restart')" disabled>Restart</button>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<h3>Timer: <label id="timer"></label></h3>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
 </div>
 
-<div id="animations"> 
+<!--div id="animations"> 
 	Animations
 	<form>
 		<input type="radio" name="animation" value="idle" checked id="idleradio">Idle<br> 
@@ -78,7 +105,7 @@ function initControls()
 		<input type="radio" name="animation" value="attack" id="attackradio">Attack<br> 
 		<input type="radio" name="animation" value="dead" id="deadradio">Dead<br> 
 	</form>
-</div> 
+</div--> 
 
 
 </body>
